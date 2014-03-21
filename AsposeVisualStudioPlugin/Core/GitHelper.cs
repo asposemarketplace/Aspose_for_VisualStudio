@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using NGit.Api;
+
 namespace AsposeVisualStudioPlugin.Core
 {
     public class GitHelper
@@ -29,13 +30,6 @@ namespace AsposeVisualStudioPlugin.Core
                 CloneCommand clone = Git.CloneRepository();
                 clone.SetURI(repUrl);
                 clone.SetDirectory(localFolder);
-                
-                //var stringWriter = new StringWriter();
-                //StreamWriter writer = new StreamWriter(@"d:\important.txt");
-                //writer.AutoFlush = true;
-                //new Program.TextProgressMonitor(Console.Out)
-                //var textMonitor = new NGit.TextProgressMonitor(writer);
-                //clone.SetProgressMonitor(textMonitor);
 
                 Git repo = clone.Call();
                 //writer.Close();
@@ -43,6 +37,7 @@ namespace AsposeVisualStudioPlugin.Core
             }
             catch (Exception ex)
             {
+
                 try
                 {
                     var git = Git.Open(localFolder);

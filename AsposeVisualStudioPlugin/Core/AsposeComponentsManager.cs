@@ -32,9 +32,9 @@ namespace AsposeVisualStudioPlugin.Core
 
             foreach (AsposeComponent component in AsposeComponents.list.Values)
             {
-
                 if (component.is_selected())
                 {
+                    GlobalData.SelectedComponent = component.get_name();
 
                     ProductRelease productRelease = getProductReleaseInfo(component.get_name());
                     component.set_downloadUrl(productRelease.DownloadLink);
@@ -52,40 +52,12 @@ namespace AsposeVisualStudioPlugin.Core
                         }
                         else
                         {
-                            storeReleaseNotes(component);
-                            string htmlFilePath = getLibaryDownloadPath() + component.get_name() + ".htm"; // path to your new file
-                            // open the default web browser for the HTML page
-                            try
-                            {
-                                System.Diagnostics.Process.Start(htmlFilePath);
-                            }
-                            catch (IOException e)
-                            {
-
-                            }
-
-                            if ((_pageOne.showMessage(component.get_name() + " - " + Constants.NEW_VERSION_MESSAGE_TITLE, Constants.NEW_VERSION_MESSAGE + "\nLatest Version: " + component.get_latestVersion() + "\nCurrent Version: " + component.get_currentVersion(), System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Information) == System.Windows.Forms.DialogResult.Yes))
-                            {
-                                if (addToDownloadList(component, component.get_downloadUrl(), component.get_downloadFileName()))
-                                {
-                                    //component.set_downloaded(true);
-                                    //storeVersion(component);
-                                }
-                            }
-                            else
-                            {
-                                component.set_downloaded(true);
-                            }
+                            addToDownloadList(component, component.get_downloadUrl(), component.get_downloadFileName());                            
                         }
                     }
                     else
                     {
-                        if (addToDownloadList(component, component.get_downloadUrl(), component.get_downloadFileName()))
-                        {
-                            //component.set_downloaded(true);
-                            //storeVersion(component);
-                        }
-                        
+                        addToDownloadList(component, component.get_downloadUrl(), component.get_downloadFileName());                        
                     }
                 }
             }
@@ -93,36 +65,34 @@ namespace AsposeVisualStudioPlugin.Core
             return true;
         }
 
-        /**
-         * 
-         * @param component
-         * @return
-         */
-        public string readVersion(AsposeComponent component)
+        public ProductRelease getProductReleaseInfo(string productName)
+        {
+            com.aspose.community.AsposeDownloads asposeDn = new AsposeDownloads();
+            try
+            {
+                return asposeDn.GetProductRelease(".NET", productName);
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return null;
+        }
+
+        public static string readVersion(AsposeComponent component)
         {
             string localPath = getLibaryDownloadPath() + component.get_name() + ".ver";
-            string line = null;
+            string line = string.Empty;
 
             try
             {
                 return System.IO.File.ReadAllText(localPath);
             }
-            catch (FileNotFoundException e)
-            {
-
-            }
-            catch (IOException e)
-            {
-
-            }
-
+            catch (Exception) { }
             return line;
         }
 
-        /**
-         * 
-         * @param component
-         */
         public void storeReleaseNotes(AsposeComponent component)
         {
             string localPath = getLibaryDownloadPath() + component.get_name() + ".htm";
@@ -141,10 +111,6 @@ namespace AsposeVisualStudioPlugin.Core
 
         }
 
-        /**
-         * 
-         * @param component
-         */
         public static void storeVersion(AsposeComponent component)
         {
             string localPath = getLibaryDownloadPath() + component.get_name() + ".ver";
@@ -163,67 +129,25 @@ namespace AsposeVisualStudioPlugin.Core
 
         }
 
-        /**
-         * 
-         * @param productName
-         * @return
-         */
-        public ProductRelease getProductReleaseInfo(string productName)
-        {
-            com.aspose.community.AsposeDownloads asposeDn = new AsposeDownloads();
-            try
-            {
-                return asposeDn.GetProductRelease(".NET", productName);
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            return null;
-        }
-
-        /**
-         * 
-         * @param libFileName
-         * @return
-         */
-        private bool libraryAlreadyExists(string libFileName)
+        public static bool libraryAlreadyExists(string libFileName)
         {
             return System.IO.File.Exists(getLibaryDownloadPath() + libFileName);
         }
 
-       
-        /**
-         * 
-         * @param urlStr
-         * @param outputFile
-         * @return
-         */
-        public bool addToDownloadList(AsposeComponent component, string urlStr, string outputFile)
+        public static void addToDownloadList(AsposeComponent component, string urlStr, string outputFile)
         {
-
             AsyncDownload asyncDownload = new AsyncDownload();
             asyncDownload.Url = urlStr;
             asyncDownload.LocalPath = getLibaryDownloadPath() + outputFile;
             asyncDownload.Component = component;
             AsyncDownloadList.list.Add(asyncDownload);
-            return true;
         }
 
-        /**
-         * 
-         * @param filePath
-         * @return
-         */
         public static string removeExtention(string filePath)
         {
             return Path.GetFileNameWithoutExtension(filePath);
         }
-        /**
-         * 
-         * @return
-         */
+
         public static bool isIneternetConnected()
         {
             try
@@ -237,10 +161,6 @@ namespace AsposeVisualStudioPlugin.Core
             return true;
         }
 
-        /**
-         * 
-         * @return
-         */
         public static string getLibaryDownloadPath()
         {
 
@@ -261,11 +181,7 @@ namespace AsposeVisualStudioPlugin.Core
             path = path + "/aspose/dotnet/";
             return path;
         }
-        /**
-         * 
-         * @param zipFile
-         * @param outputFolder
-         */
+
         public static void unZipFile(string zipFile, string outputFolder)
         {
 

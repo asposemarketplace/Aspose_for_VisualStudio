@@ -1,6 +1,0 @@
-D:\Projects\AsposeVSPlugin\AsposeVisualStudioPlugin\Installer\bin\Debug\Installer.msi
-D:\Projects\AsposeVSPlugin\AsposeVisualStudioPlugin\Installer\bin\Debug\Installer.wixpdb
-D:\Projects\AsposeVSPlugin\out\Installer.msi
-D:\Projects\AsposeVSPlugin\out\Installer.wixpdb
-obj\Debug\Product.wixobj
-obj\Debug\Product.Generated.wixobj

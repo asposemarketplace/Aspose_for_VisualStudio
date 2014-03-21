@@ -13,18 +13,15 @@ using System.Threading;
 using System.Xml;
 using AsposeVisualStudioPlugin.XML;
 using System.Xml.Serialization;
-//using System.Xml;
-//using System.Xml.Serialization;
+using System.Diagnostics;
 using System.Xml.Linq;
-using System.Linq;
 using EnvDTE80;
-//using Microsoft.Build.BuildEngine;
 
 namespace AsposeVisualStudioPlugin.GUI
 {
     public partial class SampleWizardPage : Form
     {
-        private bool examplesNotAvailable = true;
+        private bool examplesNotAvailable = false;
         private bool downloadTaskCompleted = false;
         private DTE2 _application = null;
         CancellationTokenSource cancelToken = new CancellationTokenSource();
@@ -38,6 +35,15 @@ namespace AsposeVisualStudioPlugin.GUI
             AsposeComponents components = new AsposeComponents();
             fillComponentsCombo();
         }
+
+        private string GetExamplesRootPath()
+        {
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Aspose";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+
         public SampleWizardPage(DTE2 application)
         {
             _application = application;
@@ -45,6 +51,7 @@ namespace AsposeVisualStudioPlugin.GUI
             AsposeComponents components = new AsposeComponents();
             fillComponentsCombo();
             validateForm();
+            textBoxLocation.Text = GetExamplesRootPath();
         }
 
         private void fillComponentsCombo()
@@ -60,13 +67,27 @@ namespace AsposeVisualStudioPlugin.GUI
                     addedComponentsCount++;
                 }
             }
+
+            if (!string.IsNullOrEmpty(GlobalData.SelectedComponent))
+            {
+                comboBoxComponents.SelectedItem = GlobalData.SelectedComponent;
+                GlobalData.SelectedComponent = string.Empty;
+            }
+
             if (addedComponentsCount == 0)
             {
                 ComponentWizardPage components = new ComponentWizardPage();
+                components.FormClosed += new FormClosedEventHandler(components_FormClosed);
                 components.ShowDialog();
-                fillComponentsCombo();
-            }
 
+                if (!GlobalData.isComponentFormAborted) fillComponentsCombo();
+            }
+        }
+
+        private void components_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (GlobalData.isComponentFormAborted)
+                this.Close();
         }
 
         public DialogResult showMessage(string title, string message, MessageBoxButtons buttons, MessageBoxIcon icon)
@@ -74,26 +95,18 @@ namespace AsposeVisualStudioPlugin.GUI
             return MessageBox.Show(message, title, buttons, icon);
         }
 
-        
-
-        private void comboBoxComponents_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (comboBoxComponents.Text == "")
-                return;
-            AsposeComponent component;
-            AsposeComponents.list.TryGetValue(comboBoxComponents.Text, out component);
-            checkAndUpdateRepo(component);
-        }
-
         private bool validateForm()
         {
             if (!isValidNodeSelected())
             {
-                setErrorMessage("Please select sample to create project");
+                if (examplesTree.Nodes.Count > 0)
+                    setErrorMessage("Please double click an Example below to open it");
+                else
+                    setErrorMessage("Please select an API to view its Examples");
                 return false;
             }
 
-            if(textBoxLocation.Text=="")
+            if (textBoxLocation.Text == "")
             {
                 setErrorMessage("Please select location to create project");
                 return false;
@@ -101,15 +114,13 @@ namespace AsposeVisualStudioPlugin.GUI
 
             clearError();
             return true;
-
-
         }
 
         private bool isValidNodeSelected()
         {
             /*if (examplesTree.SelectedNode != null)
                 selectedNode = examplesTree.SelectedNode;*/
-            
+
             if (selectedNode == null)
                 return false;
             TreeNodeData treedata = new TreeNodeData();
@@ -122,19 +133,20 @@ namespace AsposeVisualStudioPlugin.GUI
 
             return true;
         }
+
         private void setErrorMessage(string message)
         {
-            toolStripStatusMessage.ForeColor = Color.Red;
             toolStripStatusMessage.Text = message;
-            buttonFinish.Enabled = false;
+            ContinueButton.Enabled = false;
         }
 
         private void clearError()
         {
 
             toolStripStatusMessage.Text = "";
-            buttonFinish.Enabled = true;
+            ContinueButton.Enabled = true;
         }
+
         private void CloneOrCheckOutRepo(AsposeComponent component)
         {
             downloadTaskCompleted = false;
@@ -145,52 +157,50 @@ namespace AsposeVisualStudioPlugin.GUI
             progressTask = new Task(delegate { progressDisplayTask(); });
             progressBar.Enabled = true;
             progressTask.Start();
-            buttonFinish.Enabled = false;
+            ContinueButton.Enabled = false;
             if (GitHelper.isExamplesDefinitionsPresent(component))
             {
-                toolStripStatusMessage.ForeColor = Color.Green;
-                toolStripStatusMessage.Text = "Please wait, Samples download is in progress";
+                toolStripStatusMessage.Text = "Please wait while the Examples are being downloaded...";
             }
             else
             {
-                toolStripStatusMessage.Text = "Please wait, Samples loading is in progress";
-                toolStripStatusMessage.ForeColor = Color.Green;
+                toolStripStatusMessage.Text = "Please wait while the Examples are being downloaded...";
             }
         }
 
         private void RepositoryUpdateCompleted()
         {
-            buttonFinish.Enabled = true;
+            ContinueButton.Enabled = true;
             toolStripStatusMessage.Text = "";
             //cancelToken.Cancel();
             downloadTaskCompleted = true;
             progressBar.Value = 0;
             populateExamplesTreeReady();
+            progressBar1.Visible = false;
         }
 
         private void progressDisplayTask()
         {
-            int count = 1;
-            while (true)
+            try
             {
-                if (downloadTaskCompleted)
-                    break;
-                if (count < 100)
-                    count++;
-                else
-                    count = 1;
+                this.Invoke(new MethodInvoker(delegate() { progressBar1.Visible = true; }));
 
-                this.Invoke(new MethodInvoker(delegate()
-                {
+                //int count = 1;
+                //while (true)
+                //{
+                //    if (downloadTaskCompleted)
+                //        break;
+                //    if (count < 100)
+                //        count++;
+                //    else
+                //        count = 1;
 
-                    progressBar.Value = count; 
-
-                }));
-
-                Thread.Sleep(500);
-
+                //    this.Invoke(new MethodInvoker(delegate() { progressBar.Value = count; }));
+                //}
             }
-
+            catch (Exception)
+            {
+            }
         }
 
         private void CloneOrCheckOutRepoWorker(AsposeComponent component)
@@ -204,7 +214,7 @@ namespace AsposeVisualStudioPlugin.GUI
         {
             if (null == component)
                 return;
-            if (null == component.get_remoteExamplesRepository() || component.RemoteExamplesRepository==string.Empty)
+            if (null == component.get_remoteExamplesRepository() || component.RemoteExamplesRepository == string.Empty)
             {
                 showMessage("Examples not available", component.get_name() + " - " + Constants.EXAMPLES_NOT_AVAILABLE_MESSAGE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 examplesNotAvailable = true;
@@ -266,9 +276,12 @@ namespace AsposeVisualStudioPlugin.GUI
             IEnumerable<XElement> examples = from c in data.Elements("Examples") select c;
             parseExamplesTree(examples, parentNode);
             parentNode.ExpandAll();
+
+            if (examplesTree.Nodes.Count > 0)
+                examplesTree.Nodes[0].EnsureVisible();
         }
 
-                void parseFoldersTree(IEnumerable<XElement> rootFoldersList, TreeNode parentNode)
+        void parseFoldersTree(IEnumerable<XElement> rootFoldersList, TreeNode parentNode)
         {
             foreach (XElement folders_sub in rootFoldersList)
             {
@@ -280,16 +293,16 @@ namespace AsposeVisualStudioPlugin.GUI
 
                     TreeNode childNode = parentNode.Nodes.Add(folderObj.Title);
                     TreeNodeData treeNodeData = new TreeNodeData();
-                    treeNodeData.Path = Path.Combine(((TreeNodeData)(parentNode.Tag)).Path,folderObj.FolderName );
+                    treeNodeData.Path = Path.Combine(((TreeNodeData)(parentNode.Tag)).Path, folderObj.FolderName);
                     childNode.Tag = treeNodeData;
                     childNode.ImageIndex = 0;
                     IEnumerable<XElement> examples_list2 = from c in folder.Elements("Examples") select c;
                     parseExamplesTree(examples_list2, childNode);
 
                     IEnumerable<XElement> folders_list2 = from c in folder.Elements("Folders") select c;
-                    parseFoldersTree(folders_list2,childNode);
+                    parseFoldersTree(folders_list2, childNode);
                 }
-                
+
             }
         }
 
@@ -316,13 +329,6 @@ namespace AsposeVisualStudioPlugin.GUI
             }
         }
 
-        private void buttonFinish_Click(object sender, EventArgs e)
-        {
-            //selectedNode = examplesTree.SelectedNode;
-            CopyAndCreateProject();
-            Close();
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (downloadTaskCompleted)
@@ -338,34 +344,132 @@ namespace AsposeVisualStudioPlugin.GUI
             validateForm();*/
         }
 
-        void CopyAndCreateProject()
+        private string GetDestinationPath(string destinationRoot, string selectedProject)
+        {
+            if (!Directory.Exists(destinationRoot))
+                Directory.CreateDirectory(destinationRoot);
+
+            string path = destinationRoot + "\\" + Path.GetFileName(selectedProject);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            else
+            {
+                int index = 1;
+                while (Directory.Exists(path + index))
+                {
+                    index++;
+                }
+                path = path + index;
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+            }
+
+            return path;
+        }
+
+        bool CopyAndCreateProject()
         {
             AsposeComponent component;
             AsposeComponents.list.TryGetValue(comboBoxComponents.Text, out component);
             TreeNodeData nodeData = (TreeNodeData)selectedNode.Tag;
             string sampleSourcePath = nodeData.Path;
             string repoPath = GitHelper.getLocalRepositoryPath(component);
-            CopyFolderContents(Path.Combine(repoPath, sampleSourcePath),textBoxLocation.Text);
-            string dllsRootPath = AsposeComponentsManager.getLibaryDownloadPath();
-            string[] dllsPaths = Directory.GetFiles(Path.Combine(dllsRootPath, component.Name), "*.dll");
-            for (int i = 0; i < dllsPaths.Length; i++)
+            string destinationPath = GetDestinationPath(textBoxLocation.Text + "\\" + comboBoxComponents.Text, sampleSourcePath);
+
+            bool isSuccessfull = false;
+            try
             {
-                if (!Directory.Exists(Path.Combine(textBoxLocation.Text, "Bin")))
-                    Directory.CreateDirectory(Path.Combine(textBoxLocation.Text, "Bin"));
-                File.Copy(dllsPaths[i], Path.Combine(textBoxLocation.Text,"Bin",Path.GetFileName(dllsPaths[i])));
+                CopyFolderContents(Path.Combine(repoPath, sampleSourcePath), destinationPath);
+                string dllsRootPath = AsposeComponentsManager.getLibaryDownloadPath();
+                string[] dllsPaths = Directory.GetFiles(Path.Combine(dllsRootPath, component.Name), "*.dll");
+                for (int i = 0; i < dllsPaths.Length; i++)
+                {
+                    if (!Directory.Exists(Path.Combine(destinationPath, "Bin")))
+                        Directory.CreateDirectory(Path.Combine(destinationPath, "Bin"));
+                    File.Copy(dllsPaths[i], Path.Combine(destinationPath, "Bin", Path.GetFileName(dllsPaths[i])), true);
+                }
+
+                string[] projectFiles = Directory.GetFiles(Path.Combine(destinationPath, "CSharp"), "*.csproj");
+                for (int i = 0; i < projectFiles.Length; i++)
+                {
+                    UpdatePrjReferenceHintPath(projectFiles[i], component);
+                }
+
+                int vsVersion = GetVSVersion();
+
+                if (vsVersion >= 2010) vsVersion = 2010; // Since our examples mostly have 2010 solution files
+
+                string[] solutionFiles = Directory.GetFiles(Path.Combine(destinationPath, "CSharp"), "*.sln");
+
+                try
+                {
+                    if (solutionFiles.Length > 0)
+                    {
+                        foreach (string sFile in solutionFiles)
+                        {
+                            if (sFile.Contains(vsVersion.ToString()))
+                            {
+                                _application.Solution.Open(sFile);
+                                isSuccessfull = true;
+                                break;
+                            }
+                        }
+
+                        if (!isSuccessfull)
+                        {
+                            System.Diagnostics.Process.Start(solutionFiles[solutionFiles.Count() - 1]);
+                            isSuccessfull = true;
+                        }
+                    }
+                    else if (projectFiles.Length > 0)
+                    {
+                        System.Diagnostics.Process.Start(projectFiles[0]);
+                        isSuccessfull = true;
+                    }
+                }
+                catch (Exception)
+                {
+                    if (solutionFiles.Length > 0)
+                    {
+                        System.Diagnostics.Process.Start(solutionFiles[0]);
+                        isSuccessfull = true;
+                    }
+                    else if (projectFiles.Length > 0)
+                    {
+                        System.Diagnostics.Process.Start(projectFiles[0]);
+                        isSuccessfull = true;
+                    }
+                }
+            }
+            catch (Exception)
+            { }
+
+            if (!isSuccessfull)
+            {
+                MessageBox.Show("Oops! We are unable to open the example project. Please open it manually from " + destinationPath);
+                return false;
             }
 
-            string[] projectFiles = Directory.GetFiles(Path.Combine(textBoxLocation.Text, "CSharp"), "*.csproj");
-            for(int i = 0; i<projectFiles.Length;i++)
-            {
-                UpdatePrjReferenceHintPath(projectFiles[i],component);
-            }
+            return true;
+        }
 
-            string[] solutionFiles = Directory.GetFiles(Path.Combine(textBoxLocation.Text, "CSharp"), "*.sln");
-            if (solutionFiles.Length > 0)
+        private int GetVSVersion()
+        {
+            switch (_application.Version)
             {
-               _application.Solution.Open(solutionFiles[0]);
+                case "11.0":
+                    return 2012;
+                case "10.0":
+                    return 2010;
+                case "9.0":
+                    return 2008;
+                case "8.0":
+                    return 2005;
             }
+            return 2003;
         }
 
         private void UpdatePrjReferenceHintPath(string projectFilePath, AsposeComponent component)
@@ -432,20 +536,9 @@ namespace AsposeVisualStudioPlugin.GUI
             }
         }
 
-        private void buttonBrowseLocation_Click(object sender, EventArgs e)
-        {
-            if(DialogResult.OK==folderBrowserDialog1.ShowDialog())
-            {
-            textBoxLocation.Text = folderBrowserDialog1.SelectedPath;
-            validateForm();
-            }
-        }
-
         private void buttonGetComponents_Click(object sender, EventArgs e)
         {
-            ComponentWizardPage wizardpage = new ComponentWizardPage();
-            wizardpage.ShowDialog();
-            fillComponentsCombo();
+
         }
 
         private void examplesTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -454,25 +547,66 @@ namespace AsposeVisualStudioPlugin.GUI
             validateForm();*/
         }
 
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
         private void examplesTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             selectedNode = examplesTree.SelectedNode;
-            validateForm();
+            if (isValidNodeSelected())
+            {
+                ContinueButton.Enabled = true;
+            }
+            else
+            {
+                ContinueButton.Enabled = false;
+            }
         }
 
         private void examplesTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-           /* selectedNode = examplesTree.SelectedNode;
-            validateForm();*/
+            if (isValidNodeSelected())
+            {
+                if (CopyAndCreateProject())
+                    Close();
+            }
         }
 
-        
-    }
+        private void AbortButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
 
-    
+        private void ContinueButton_Click(object sender, EventArgs e)
+        {
+            if (CopyAndCreateProject())
+                Close();
+        }
+
+        private void comboBoxComponents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBoxComponents.Text == "")
+                return;
+            AsposeComponent component;
+            AsposeComponents.list.TryGetValue(comboBoxComponents.Text, out component);
+
+            checkAndUpdateRepo(component);
+
+        }
+
+        private void GetComponentsButton_Click(object sender, EventArgs e)
+        {
+            GlobalData.isAutoOpened = false;
+            ComponentWizardPage wizardpage = new ComponentWizardPage();
+            wizardpage.ShowDialog();
+            fillComponentsCombo();
+        }
+
+        private void BrowseButton_Click(object sender, EventArgs e)
+        {
+            if (DialogResult.OK == folderBrowserDialog1.ShowDialog())
+            {
+                textBoxLocation.Text = folderBrowserDialog1.SelectedPath;
+                validateForm();
+            }
+        }
+
+    }
 }

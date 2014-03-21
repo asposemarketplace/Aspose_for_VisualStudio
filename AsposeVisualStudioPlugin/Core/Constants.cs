@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AsposeVisualStudioPlugin.Core
 {
     public class Constants
     {
-        /**
-	 * Constants
-	 */
-
         //Aspose .NET components
         public static string ASPOSE_CELLS = "Aspose.Cells";
         public static string ASPOSE_WORDS = "Aspose.Words";
@@ -42,7 +37,7 @@ namespace AsposeVisualStudioPlugin.Core
         public static string FIRST_PAGE_TITLE = "Aspose New Project";
         public static string FIRST_PAGE_DESCRIPTION = "Create Aspose New Project";
         public static string WIZARD_NAME = "Aspose new project";
-        public static string IS_COMPONENT_SELECTED = "Please select at least one Aspose library to create a new project";
+        public static string IS_COMPONENT_SELECTED = "Please select one or more products to continue";
         public static string INTERNET_CONNECTION_REQUIRED_MESSAGE_TITLE = "Internet connectivity";
         public static string INTERNET_CONNECTION_REQUIRED_MESSAGE = "Internet connectivity is required to download Aspose libraries";
         public static string ASPOSE_JAVA_COMP_LINK_TEXT = "Visit Aspose for more details.";

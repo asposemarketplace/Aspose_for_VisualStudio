@@ -11,13 +11,14 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AsposeVisualStudioPlugin.Core;
+using AsposeVisualStudioPlugin.com.aspose.community;
 
 namespace AsposeVisualStudioPlugin.GUI
 {
     public partial class ComponentWizardPage : Form
     {
         //AsyncDownloadList downloadList = new AsyncDownloadList();
-        AsyncDownload asyncActiveDownload=null;
+        AsyncDownload asyncActiveDownload = null;
         public ComponentWizardPage()
         {
             InitializeComponent();
@@ -25,7 +26,13 @@ namespace AsposeVisualStudioPlugin.GUI
             AsyncDownloadList.list.Clear();
             validateForm();
             AsposeComponents components = new AsposeComponents();
+            progressBar.Visible = false;
+            toolStripStatusMessage.Visible = false;
 
+            if (!GlobalData.isAutoOpened)
+            {
+                AbortButton.Text = "Close";
+            }
         }
 
         private void performPostFinish()
@@ -35,13 +42,139 @@ namespace AsposeVisualStudioPlugin.GUI
 
         private bool performFinish()
         {
-            buttonFinish.Enabled = false;
+            ContinueButton.Enabled = false;
             processComponents();
-            AsposeComponentsManager comManager = new AsposeComponentsManager(this);
-            comManager.downloadComponents();
-            processDownloadList();
+
+            if (!AsposeComponentsManager.isIneternetConnected())
+            {
+                this.showMessage(Constants.INTERNET_CONNECTION_REQUIRED_MESSAGE_TITLE, Constants.INTERNET_CONNECTION_REQUIRED_MESSAGE, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                return false;
+            }
+
+            GlobalData.backgroundWorker = new BackgroundWorker();
+            GlobalData.backgroundWorker.WorkerReportsProgress = true;
+            GlobalData.backgroundWorker.WorkerSupportsCancellation = true;
+
+            GlobalData.backgroundWorker.DoWork += new DoWorkEventHandler(backgroundWorker_DoWork);
+            GlobalData.backgroundWorker.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker_ProgressChanged);
+            GlobalData.backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_RunWorkerCompleted);
+            GlobalData.backgroundWorker.RunWorkerAsync();
+
             return true;
         }
+
+        public ProductRelease getProductReleaseInfo(string productName)
+        {
+            com.aspose.community.AsposeDownloads asposeDn = new AsposeDownloads();
+            try
+            {
+                return asposeDn.GetProductRelease(".NET", productName);
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return null;
+        }
+
+        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                UpdateProgress(1);
+                int total = 10;
+                int index = 0;
+
+                AsposeComponentsManager comManager = new AsposeComponentsManager(this);
+                foreach (AsposeComponent component in AsposeComponents.list.Values)
+                {
+                    if (component.is_selected())
+                    {
+                        GlobalData.SelectedComponent = component.get_name();
+
+                        ProductRelease productRelease = getProductReleaseInfo(component.get_name());
+                        component.set_downloadUrl(productRelease.DownloadLink);
+                        component.set_downloadFileName(productRelease.FileName);
+                        component.set_changeLog(productRelease.ChangeLog);
+                        component.set_latestVersion(productRelease.VersionNumber);
+                        if (AsposeComponentsManager.libraryAlreadyExists(component.get_downloadFileName()))
+                        {
+                            component.set_currentVersion(AsposeComponentsManager.readVersion(component));
+                            if (AsposeComponentsManager.readVersion(component).CompareTo(component.get_latestVersion()) == 0)
+                            {
+                                component.set_downloaded(true);
+                            }
+                            else
+                            {
+                                AsposeComponentsManager.addToDownloadList(component, component.get_downloadUrl(), component.get_downloadFileName());
+                            }
+                        }
+                        else
+                        {
+                            AsposeComponentsManager.addToDownloadList(component, component.get_downloadUrl(), component.get_downloadFileName());
+                        }
+                    }
+
+                    decimal percentage = ((decimal)(index + 1) / (decimal)total) * 100;
+                    UpdateProgress(Convert.ToInt32(percentage));
+                    
+                    index++;
+                }
+
+                UpdateProgress(100);
+                UpdateText("All operations completed");
+            }
+            catch (Exception) { }
+        }
+
+        private void UpdateText(string textToUpdate)
+        {
+            if (GlobalData.backgroundWorker != null)
+            {
+                toolStripStatusMessage.BeginInvoke(new TaskDescriptionCallback(this.TaskDescriptionLabel),
+                     new object[] { textToUpdate });               
+            }
+        }
+
+        private void UpdateProgress(int progressValue)
+        {
+            if (GlobalData.backgroundWorker != null)
+            {
+                progressBar.BeginInvoke(new UpdateCurrentProgressBarCallback(this.UpdateCurrentProgressBar), new object[] { progressValue });                
+            }
+        }
+
+        private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (e.ProgressPercentage == 0)
+                progressBar.Value = 1;
+            else
+                progressBar.Value = e.ProgressPercentage;
+        }
+
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            processDownloadList();
+        }
+
+
+        public delegate void TaskDescriptionCallback(string value);
+        private void TaskDescriptionLabel(string value)
+        {
+            toolStripStatusMessage.Text = value;
+        }
+
+        public delegate void UpdateCurrentProgressBarCallback(int value);
+        private void UpdateCurrentProgressBar(int value)
+        {
+            if (value < 0) value = 0;
+            if (value > 100) value = 100;
+
+            progressBar.Value = value;
+        }
+
+
         private void processDownloadList()
         {
             if (AsyncDownloadList.list.Count > 0)
@@ -49,10 +182,7 @@ namespace AsposeVisualStudioPlugin.GUI
                 asyncActiveDownload = AsyncDownloadList.list[0];
                 AsyncDownloadList.list.Remove(asyncActiveDownload);
                 downloadFileFromWeb(asyncActiveDownload.Url, asyncActiveDownload.LocalPath);
-                toolStripStatusMessage.ForeColor = Color.Green;
-                toolStripStatusMessage.Text = "Please wait, downloading " + asyncActiveDownload.Component.Name;
-                buttonCancel.Enabled = false;
-
+                toolStripStatusMessage.Text = "downloading " + asyncActiveDownload.Component.Name;
             }
             else
                 performPostFinish();
@@ -61,6 +191,7 @@ namespace AsposeVisualStudioPlugin.GUI
 
         private void downloadFileFromWeb(string sourceURL, string destinationPath)
         {
+            progressBar.Visible = true;
             WebClient webClient = new WebClient();
             webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
             webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
@@ -78,37 +209,33 @@ namespace AsposeVisualStudioPlugin.GUI
             asyncActiveDownload.Component.Downloaded = true;
             AsposeComponentsManager.storeVersion(asyncActiveDownload.Component);
             UnZipDownloadedFile(asyncActiveDownload);
-            buttonCancel.Enabled = true;
+            AbortButton.Enabled = true;
             processDownloadList();
         }
 
         private void UnZipDownloadedFile(AsyncDownload download)
         {
-            AsposeComponentsManager.unZipFile(download.LocalPath, Path.Combine(Path.GetDirectoryName(download.LocalPath) , download.Component.Name));
+            AsposeComponentsManager.unZipFile(download.LocalPath, Path.Combine(Path.GetDirectoryName(download.LocalPath), download.Component.Name));
         }
 
-        public DialogResult showMessage(string title, string message,MessageBoxButtons buttons, MessageBoxIcon icon)
+        public DialogResult showMessage(string title, string message, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
             return MessageBox.Show(message, title, buttons, icon);
         }
 
         private bool validateForm()
         {
-            
-
             if (!isComponentSelected())
             {
                 setErrorMessage(Constants.IS_COMPONENT_SELECTED);
                 return false;
             }
 
-           
-
             clearError();
             return true;
-            
+
         }
-        
+
         void processComponents()
         {
             if (checkBoxAsposeCells.Checked)
@@ -173,20 +300,17 @@ namespace AsposeVisualStudioPlugin.GUI
             }
         }
 
-       
+
 
         private void setErrorMessage(string message)
         {
-            toolStripStatusMessage.ForeColor = Color.Red;
             toolStripStatusMessage.Text = message;
-            buttonFinish.Enabled = false;
+            ContinueButton.Enabled = false;
         }
 
         private void clearError()
         {
-
-            toolStripStatusMessage.Text = "";
-            buttonFinish.Enabled = true;
+            ContinueButton.Enabled = true;
         }
 
         private bool isComponentSelected()
@@ -237,18 +361,6 @@ namespace AsposeVisualStudioPlugin.GUI
         {
             linkLabelAspose.LinkVisited = true;
             System.Diagnostics.Process.Start("http://www.aspose.com/.net/total-component.aspx");
-        }
-
-        private void buttonFinish_Click(object sender, EventArgs e)
-        {
-            performFinish();
-        }
-
-        
-
-        private void buttonCancel_Click(object sender, EventArgs e)
-        {
-            Close();
         }
 
         #region checkbox_events
@@ -335,6 +447,24 @@ namespace AsposeVisualStudioPlugin.GUI
             validateForm();
         }
 
-       
+        private void ContinueButton_Click(object sender, EventArgs e)
+        {
+            progressBar.Value = 1;
+            progressBar.Visible = true;
+            toolStripStatusMessage.Visible = true;
+            label2.Text = "Please wait while we configure you preferences";
+            toolStripStatusMessage.Text = "Fetching API info";
+            
+            GlobalData.isComponentFormAborted = false;
+            performFinish();
+        }
+
+        private void AbortButton_Click(object sender, EventArgs e)
+        {
+            if (GlobalData.isAutoOpened)
+                GlobalData.isComponentFormAborted = true;
+            
+            Close();
+        }
     }
 }
