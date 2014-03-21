@@ -1,30 +1,72 @@
-<p style="font-size: 20px; color: #333; height: 30px; margin-top: 10px; margin-bottom: 20px">
-    <h2>Aspose Visual Studio Plugin</h2>
-</p>
-<p><span style="font-size: small">This plugin is like your own playground to quickly learn and play with Aspose .NET components reducing the learning curve. This plugin is a wizard which allows you to create new Aspose projects.</span></p>
-<p><span style="font-size: small">What you can do with this plugin?</span></p>
+<div>
+<p>Aspose Visual Studio Plugin is a great tool to quickly download and explore Aspose .NET API examples. It saves lots of time and efforts by providing very simple option to seamlessly select, download and open the latest example projects without you ever having to leave your Visual Studio IDE. The new improved 2.0 version provides the following features</p>
 <ul>
-    <li><span style="font-size: small">You can select and download any desired Aspose .NET components directly from Aspose servers without leaving your favorite Visual Studio IDE.
-</span></li>
-    <li><span style="font-size: small">Downloaded components are automatically referenced in your projects.
-</span></li>
+<li>Supports Visual Studio 2010 and Visual Studio 2012.</li>
+<li>Easy to launch from File or Tools menu in Visual Studio</li>
+<li>Saves time and reduces learning curve</li>
+<li>Enables you to select and open latest Aspose .NET API examples hosted on Github.com</li>
+<li>Selected example project is automatically opened in Visual Studio with all required references set to give you a ready to run and explore environment.</li>
+<li>Automatically downloads the latest version of API libraries and examples whenever there are new updates on the server.</li>
 </ul>
-<p style="text-align: center; color: #6c6b6b; line-height: 18px">
-    <a target="_blank" href="http://visualstudiogallery.msdn.microsoft.com/templates/images/samplescreenshot.png">
-        <img width="300" height="280" border="0" style="border: 1px solid black" alt="" src="http://i1.visualstudiogallery.msdn.s-msft.com/2aaeced9-779e-4bf4-955e-eaca352021a9/image/file/95892/1/selectcomp.png" id="95892"></a>
-</p>
-<ul>
-    <li><span style="font-size: small">You can download select Product Samples, configure them on your machine and open in Visual Studio to play with Aspose .NET APIs.
-</span></li>
-    <li><span style="font-size: small">Product Samples are presented in tree format that helps you to browse and use any sample code.
-</span></li>
-</ul>
-<p style="text-align: center; color: #6c6b6b; line-height: 18px">
-    <a target="_blank" href="http://visualstudiogallery.msdn.microsoft.com/templates/images/samplescreenshot.png">
-        <img width="300" height="280" border="0" style="border: 1px solid black" alt="" src="http://visualstudiogallery.msdn.microsoft.com/site/view/file/95886/1/selectSamples.png" id="95886"></a>
-</p>
-<span style="font-size: small">With this plugin, you never need to check for new releases of Aspose components. Whenever a new release is published, you will be notified while creating project. And you can also release notes to save your time.
-</span>
+<p style="text-align: center;">&nbsp;</p>
+<div id="attachment_13667"><a href="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin.png"><img style="display: block; margin-left: auto; margin-right: auto;" title="Aspose Visual Studio Plugin" src="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-300x249.png" alt="Aspose Visual Studio Plugin 300x249 Explore latest .NET API examples using Aspose Visual Studio Plugin 2.0" width="300" height="249" /></a>
+<p style="text-align: center;">Aspose Visual Studio Plugin</p>
+</div>
+<h2>How to Install the Aspose Visual Studio Plugin?</h2>
+<p>Installing Aspose Visual Studio Plugin templates is pretty easy. These instructions assumes that you have already installed Visual Studio 2010 or higher.</p>
+<p>The plugin is provided in the form of a MSI installer. You can download the installer from one of the following locations</p>
+<ol>
+<li>Download from <a href="http://visualstudiogallery.msdn.microsoft.com/7a6463a4-f797-413b-bfb3-97f3154acae0"> Visual Studio Gallery</a></li>
+<li>Download from <a href="https://asposevs.codeplex.com/">CodePlex</a></li>
+</ol>
+<p>Once downloaded double click the MSI to open the installer and then follow the simple instructions to complete the installation.</p>
+<p><strong>Note:</strong> Please make sure to restart Visual Studio for the changes to take effect.</p>
+<h2>How to use Aspose Visual Studio Plugin?</h2>
+<p>Once installed you can easy launch and use the interactive plugin as mentioned below</p>
+<ol>
+<li>Open the plugin using &lsquo;File&rsquo; -&gt; &lsquo;New Aspose Example Project&rsquo;<br />
+<div id="attachment_13680"><a href="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-Launch-from-File-Menu.png"><br /> <img title="Aspose Visual Studio Plugin Launch from File Menu" src="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-Launch-from-File-Menu-300x112.png" alt="Aspose Visual Studio Plugin Launch from File Menu 300x112 Explore latest .NET API examples using Aspose Visual Studio Plugin 2.0" width="300" height="112" /></a>
+<p>Aspose Visual Studio Plugin Launch from File Menu</p>
+</div>
+</li>
+<li>If you are opening the plugin for the first time (please proceed to step 3 otherwise) you will see the API selection dialog as shown below. Please select the APIs you want to explore and then click continue. It will take few minutes to download the selected APIs and their required libraries<br />
+<table>
+<tbody>
+<tr>
+<td>
+<p>&nbsp;</p>
+<div id="attachment_13668"><a href="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-API-selection-dialog.png"><img title="Aspose Visual Studio Plugin API selection dialog" src="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-API-selection-dialog-300x249.png" alt="Aspose Visual Studio Plugin API selection dialog 300x249 Explore latest .NET API examples using Aspose Visual Studio Plugin 2.0" width="300" height="249" /></a>
+<p>Aspose Visual Studio Plugin API selection dialog</p>
+</div>
+</td>
+<td>
+<p>&nbsp;</p>
+<div id="attachment_13669"><a href="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-API-download-screen.png"><img title="Aspose Visual Studio Plugin API download screen" src="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-API-download-screen-300x249.png" alt="Aspose Visual Studio Plugin API download screen 300x249 Explore latest .NET API examples using Aspose Visual Studio Plugin 2.0" width="300" height="249" /></a>
+<p>Aspose Visual Studio Plugin API download screen</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>You will be presented with the following dialog, where you can select/change the location where the example projects will be created and also select/change the APIs you want to explore
+<p style="text-align: center;">&nbsp;</p>
+<p>&nbsp;</p>
+<div id="attachment_13671"><a href="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-API-Example-Selection.png"><img style="display: block; margin-left: auto; margin-right: auto;" title="Aspose Visual Studio Plugin API Example Selection" src="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-API-Example-Selection-300x249.png" alt="Aspose Visual Studio Plugin API Example Selection 300x249 Explore latest .NET API examples using Aspose Visual Studio Plugin 2.0" width="300" height="249" /></a>
+<p style="text-align: center;">Aspose Visual Studio Plugin API Example Selection</p>
+</div>
+</li>
+<li>Select the example you want to explore and either double click to open it or click &lsquo;Continue&rsquo; to open the example project in Visual Studio.
+<p>&nbsp;</p>
+<div id="attachment_13670"><a href="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-example-opened-in-visual-studio.png"><img style="display: block; margin-left: auto; margin-right: auto;" title="Aspose Visual Studio Plugin example opened in visual studio" src="http://www.aspose.com/blogs/wp-content/uploads/2014/03/Aspose-Visual-Studio-Plugin-example-opened-in-visual-studio-300x213.png" alt="Aspose Visual Studio Plugin example opened in visual studio 300x213 Explore latest .NET API examples using Aspose Visual Studio Plugin 2.0" width="300" height="213" /></a>
+<p style="text-align: center;">Aspose Visual Studio Plugin example opened in visual studio</p>
+</div>
+</li>
+</ol></div>
+<h2>Video</h2>
+<p>Please check the video below to see this in action. <br /> <a href="https://www.youtube.com/watch?v=FN-bLZgq8_U">https://www.youtube.com/watch?v=FN-bLZgq8_U</a></p>
+  
+
 <p style="color: #444; font-weight: bold; margin-bottom: 0px; border-bottom: 1px dotted #d5d5d5; padding-bottom: 5px">
     <span>&nbsp;</span>
 </p>
