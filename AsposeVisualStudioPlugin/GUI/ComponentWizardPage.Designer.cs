@@ -33,6 +33,7 @@ namespace AsposeVisualStudioPlugin.GUI
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBoxComponentsSelection = new System.Windows.Forms.GroupBox();
+            this.checkBoxAsposeNote = new System.Windows.Forms.CheckBox();
             this.checkBoxAsposeImaging = new System.Windows.Forms.CheckBox();
             this.checkBoxAsposeOCR = new System.Windows.Forms.CheckBox();
             this.checkBoxAsposeEmail = new System.Windows.Forms.CheckBox();
@@ -90,6 +91,7 @@ namespace AsposeVisualStudioPlugin.GUI
             // 
             this.groupBoxComponentsSelection.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxComponentsSelection.Controls.Add(this.checkBoxAsposeNote);
             this.groupBoxComponentsSelection.Controls.Add(this.checkBoxAsposeImaging);
             this.groupBoxComponentsSelection.Controls.Add(this.checkBoxAsposeOCR);
             this.groupBoxComponentsSelection.Controls.Add(this.checkBoxAsposeEmail);
@@ -103,10 +105,24 @@ namespace AsposeVisualStudioPlugin.GUI
             this.groupBoxComponentsSelection.Controls.Add(this.checkBoxSelectAll);
             this.groupBoxComponentsSelection.Location = new System.Drawing.Point(11, 136);
             this.groupBoxComponentsSelection.Name = "groupBoxComponentsSelection";
-            this.groupBoxComponentsSelection.Size = new System.Drawing.Size(184, 246);
+            this.groupBoxComponentsSelection.Size = new System.Drawing.Size(184, 262);
             this.groupBoxComponentsSelection.TabIndex = 0;
             this.groupBoxComponentsSelection.TabStop = false;
             this.groupBoxComponentsSelection.Text = "Select Components:";
+            // 
+            // checkBoxAsposeNote
+            // 
+            this.checkBoxAsposeNote.AutoSize = true;
+            this.checkBoxAsposeNote.FlatAppearance.BorderSize = 0;
+            this.checkBoxAsposeNote.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Highlight;
+            this.checkBoxAsposeNote.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.checkBoxAsposeNote.Location = new System.Drawing.Point(28, 233);
+            this.checkBoxAsposeNote.Name = "checkBoxAsposeNote";
+            this.checkBoxAsposeNote.Size = new System.Drawing.Size(84, 17);
+            this.checkBoxAsposeNote.TabIndex = 10;
+            this.checkBoxAsposeNote.Text = "Aspose.Note";
+            this.checkBoxAsposeNote.UseVisualStyleBackColor = true;
+            this.checkBoxAsposeNote.CheckedChanged += new System.EventHandler(this.checkBoxAsposeNote_CheckedChanged);
             // 
             // checkBoxAsposeImaging
             // 
@@ -272,7 +288,7 @@ namespace AsposeVisualStudioPlugin.GUI
             this.groupBoxCommonUses.Controls.Add(this.labelCommonUses);
             this.groupBoxCommonUses.Location = new System.Drawing.Point(218, 136);
             this.groupBoxCommonUses.Name = "groupBoxCommonUses";
-            this.groupBoxCommonUses.Size = new System.Drawing.Size(354, 246);
+            this.groupBoxCommonUses.Size = new System.Drawing.Size(354, 262);
             this.groupBoxCommonUses.TabIndex = 1;
             this.groupBoxCommonUses.TabStop = false;
             this.groupBoxCommonUses.Text = "Common Uses:";
@@ -281,7 +297,7 @@ namespace AsposeVisualStudioPlugin.GUI
             // 
             this.linkLabelAspose.AutoSize = true;
             this.linkLabelAspose.LinkArea = new System.Windows.Forms.LinkArea(6, 6);
-            this.linkLabelAspose.Location = new System.Drawing.Point(12, 221);
+            this.linkLabelAspose.Location = new System.Drawing.Point(12, 238);
             this.linkLabelAspose.Name = "linkLabelAspose";
             this.linkLabelAspose.Size = new System.Drawing.Size(151, 17);
             this.linkLabelAspose.TabIndex = 1;
@@ -411,5 +427,6 @@ namespace AsposeVisualStudioPlugin.GUI
         private System.Windows.Forms.Button ContinueButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox checkBoxAsposeNote;
     }
 }

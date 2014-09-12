@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Aspose 2002-2014. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -298,6 +300,12 @@ namespace AsposeVisualStudioPlugin.GUI
                 AsposeComponents.list.TryGetValue(Constants.ASPOSE_IMAGING, out component);
                 component.Selected = true;
             }
+            if (checkBoxAsposeNote.Checked)
+            {
+                AsposeComponent component = new AsposeComponent();
+                AsposeComponents.list.TryGetValue(Constants.ASPOSE_NOTE, out component);
+                component.Selected = true;
+            }
         }
 
 
@@ -317,7 +325,7 @@ namespace AsposeVisualStudioPlugin.GUI
         {
             if (checkBoxAsposeCells.Checked || checkBoxAsposeWords.Checked || checkBoxAsposePdf.Checked || checkBoxAsposeSlides.Checked ||
                 checkBoxAsposeDiagram.Checked || checkBoxAsposeBarCode.Checked || checkBoxAsposeTasks.Checked || checkBoxAsposeEmail.Checked ||
-                checkBoxAsposeOCR.Checked || checkBoxAsposeImaging.Checked)
+                checkBoxAsposeOCR.Checked || checkBoxAsposeImaging.Checked || checkBoxAsposeNote.Checked)
                 return true;
 
 
@@ -336,6 +344,7 @@ namespace AsposeVisualStudioPlugin.GUI
             setTooltip(checkBoxAsposeEmail, Constants.ASPOSE_EMAIL_FEATURE_TEXT);
             setTooltip(checkBoxAsposeOCR, Constants.ASPOSE_OCR_FEATURE_TEXT);
             setTooltip(checkBoxAsposeImaging, Constants.ASPOSE_IMAGING_FEATURE_TEXT);
+            setTooltip(checkBoxAsposeNote, Constants.ASPOSE_NOTE_FEATURE_TEXT);
         }
 
         private void setTooltip(Control control, string message)
@@ -419,6 +428,12 @@ namespace AsposeVisualStudioPlugin.GUI
         {
             validateForm();
         }
+
+        private void checkBoxAsposeNote_CheckedChanged(object sender, EventArgs e)
+        {
+            validateForm();
+        }
+
         #endregion
 
         #endregion
@@ -435,6 +450,7 @@ namespace AsposeVisualStudioPlugin.GUI
             checkBoxAsposeEmail.Checked = value;
             checkBoxAsposeOCR.Checked = value;
             checkBoxAsposeImaging.Checked = value;
+            checkBoxAsposeNote.Checked = value;
         }
 
         private void logoButton_Click(object sender, EventArgs e)

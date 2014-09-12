@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Aspose 2002-2014. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +20,7 @@ namespace AsposeVisualStudioPlugin.Core
         public static string ASPOSE_EMAIL = "Aspose.Email";
         public static string ASPOSE_OCR = "Aspose.OCR";
         public static string ASPOSE_IMAGING = "Aspose.Imaging";
+        public static string ASPOSE_NOTE = "Aspose.Note";
 
         public static string WEBSERVICE_ENDPOINT = "http://community.aspose.com/community/SecureServices/AsposeDownloads.asmx";
 
@@ -107,7 +110,7 @@ namespace AsposeVisualStudioPlugin.Core
                 "\nformats. Aspose.Diagram also leverages "
                 + "\nadvanced functionality provided by Visio " +
                 "\nservices to manipulate Visio documents at " +
-                "\nserver." ;
+                "\nserver.";
         public static string ASPOSE_BARCODE_FEATURE_TEXT =
                 "Aspose.BarCode for .NET is a robust and reliable " +
                 "\nbarcode generation and recognition component, " +
@@ -146,7 +149,15 @@ namespace AsposeVisualStudioPlugin.Core
                 + "\nspectrum of traditional image processing "
                 + "\noperations as well as most demanded features "
                 + "\nthat makes it most widely used imaging engine.";
-
-
+        public static string ASPOSE_NOTE_FEATURE_TEXT =
+                "Aspose.Note for .NET is a class library"
+                + "\n for working with Microsoft Office OneNote files."
+                + "\n It allows developers to work with .one files "
+                + "\n in C#, VB.NET, ASP.NET web applications, web services "
+                + "\n and Windows applications. It makes it possible to "
+                + "\n open files and manipulate the elements of OneNote books, "
+                + "\n from text, images and properties to more complex elements, "
+                + "\n and then export to PNG, GIF, JPEG, BMP or PDF formats. ";
+              
     }
 }

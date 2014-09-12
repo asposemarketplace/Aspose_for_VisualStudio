@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Aspose 2002-2014. All Rights Reserved.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -83,6 +85,12 @@ namespace AsposeVisualStudioPlugin.Core
             asposeImaging.RemoteExamplesRepository = "https://github.com/asposeimaging/Aspose_Imaging_NET.git";
             list.Add(Constants.ASPOSE_IMAGING, asposeImaging);
 
+            AsposeComponent asposeNote = new AsposeComponent();
+            asposeNote.set_downloadUrl("");
+            asposeNote.set_downloadFileName("aspose.note.zip");
+            asposeNote.set_name(Constants.ASPOSE_NOTE);
+            asposeNote.RemoteExamplesRepository = "https://github.com/asposenote/Aspose_Note_NET.git";
+            list.Add(Constants.ASPOSE_NOTE, asposeNote);
         }
     }
 }

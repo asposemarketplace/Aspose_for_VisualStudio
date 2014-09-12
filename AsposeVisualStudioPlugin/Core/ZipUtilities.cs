@@ -1,19 +1,4 @@
-﻿/*--------------------------------------------------------------------------------------+
-|
-|   $HeadURL: svn://sialkot.codeporting.com/cs-porter/trunk/Web2Services/CsPorterWebInterface/CsPorterWebInterface/Utilities.cs $
-|   $Id: Utilities.cs 1691 2012-06-08 11:09:48Z mohsan.raza $
-|   $Revision: 1691 $
-|   $Date: 2012-06-08 16:09:48 +0500 (Fri, 08 Jun 2012) $
-|   $Author: mohsan.raza $
-|
-|   $Copyright: (c) 2001-2011 Aspose Pty Ltd. All rights reserved. $
-|   
-|   This program is confidential, proprietary and unpublished property of Aspose Pty
-|   Ltd. It may NOT be copied in part or in whole on any medium, either electronic or
-|   printed, without the express written consent of Aspose Pty Ltd.This program is 
-|   developed and maintained by CodePorting venture [http://codeporting.com ] a division of Aspose Pty Ltd.
-|
-+--------------------------------------------------------------------------------------*/
+﻿// Copyright (c) Aspose 2002-2014. All Rights Reserved.
 
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Aspose 2002-2014. All Rights Reserved.
+
+using System;
 using Extensibility;
 using EnvDTE;
 using EnvDTE80;
